@@ -1,11 +1,10 @@
+__author__ = "Gerhart"
+__license__ = "GPL3"
+__version__ = "1.2.0"
+
 from pykd import *
 import sys
 
-__author__ = "Gerhart"
-__license__ = "GPL3"
-__version__ = "0.0.1"
-
-#parsing AfdTlTransportListHead structure
 
 AF_dict = {
  0:"AF_UNSPEC", 
@@ -45,13 +44,23 @@ AF_dict = {
  35:"AF_MAX"
 }
 
-afd = module("afd")
+afd = pykd.module("afd")
 ListHead = afd.AfdTlTransportListHead
+#print "afd!AfdTlTransportListHead address is ",hex(ListHead)
 afd_rbx = ptrQWord(ListHead)
-print "cs:AfdTlTransportListHead address is ",hex(afd_rbx)
+print("cs:AfdTlTransportListHead address is ", hex(afd_rbx))
 
-while (afd_rbx <> ListHead) & (afd_rbx != 0xffffffffffffffffL):
-	print "----Address family",hex(ptrByte(afd_rbx+0x16)),"[",AF_dict[ptrByte(afd_rbx+0x16)],"]"
-	print "--Dispatch function",findSymbol(ptrQWord(afd_rbx+0x28))
-	afd_rbx = ptrQWord(afd_rbx)
-print "Cycle end. Afd_rbx",hex(afd_rbx)
+while (afd_rbx != ListHead) & (afd_rbx != 0xffffffffffffffff):
+ #print "afd_rbx in cycle",hex(afd_rbx)
+ #print "AfdTlHead+0x16",hex(ptrQWord(afd_rbx+0x16))
+ #print "AfdTlHead+0x1c",hex(ptrQWord(afd_rbx+0x1c))
+ #print "----Address family",hex(ptrByte(afd_rbx+0x16))
+    print("----Address family", hex(ptrByte(afd_rbx + 0x16)), "[", AF_dict[ptrByte(afd_rbx + 0x16)], "]")
+    print("--Dispatch function", findSymbol(ptrQWord(afd_rbx + 0x28)))
+    afd_rbx = ptrQWord(afd_rbx)
+print("Cycle end. Afd_rbx", hex(afd_rbx))
+
+#afd = dbgCommand("? afd!AfdTlTransportListHead")
+#afd = typedVar("afd!AfdTlTransportListHead")
+#afd = expr("@rax+10")
+#afd = exprmodule("afd")
